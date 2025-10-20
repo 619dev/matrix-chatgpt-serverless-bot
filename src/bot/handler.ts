@@ -201,9 +201,17 @@ export class MessageHandler {
 
   private async sendResponseWithImages(roomId: string, response: string): Promise<void> {
     console.log('Response content:', response);
+    console.log('Response length:', response.length);
 
-    const generalUrlRegex = /(https?:\/\/[^\s<>"'\u4e00-\u9fa5]+)/gi;
-    const allUrls = response.match(generalUrlRegex);
+    const generalUrlRegex = /(https?:\/\/[^\s<>"'\u4e00-\u9fa5，。、；：！？]+)/gi;
+    const urlMatches = response.match(generalUrlRegex);
+
+    let allUrls: string[] | null = null;
+    if (urlMatches) {
+      allUrls = urlMatches.map(url => {
+        return url.replace(/[,\.;:!?]+$/, '');
+      });
+    }
 
     console.log('All URLs found:', allUrls);
 
@@ -218,7 +226,8 @@ export class MessageHandler {
                lower.includes('pic') ||
                lower.match(/\.(png|jpg|jpeg|gif|webp|bmp|svg)($|\?)/i) ||
                lower.includes('doubaopic') ||
-               lower.includes('volccdn');
+               lower.includes('volccdn') ||
+               lower.includes('bytedance');
       });
       if (filtered.length > 0) {
         imageUrls = filtered;
