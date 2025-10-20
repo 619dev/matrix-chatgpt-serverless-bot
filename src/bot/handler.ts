@@ -83,6 +83,15 @@ export class MessageHandler {
 
       const response = await this.generateResponse(roomId, cleanMessage);
 
+      console.log('Generated response:', response);
+      console.log('Response type:', typeof response);
+      console.log('Response length:', response?.length);
+
+      if (!response || response.trim() === '') {
+        await this.matrixClient.sendMessage(roomId, '❌ Received empty response from AI');
+        return;
+      }
+
       await this.r2Storage.appendConversationMessage(roomId, {
         role: 'assistant',
         content: response,
@@ -150,7 +159,16 @@ export class MessageHandler {
       max_tokens: roomConfig?.maxTokens || 2000,
     });
 
-    return response.choices[0].message.content;
+    console.log('Full API response:', JSON.stringify(response, null, 2));
+
+    const content = response.choices[0]?.message?.content;
+
+    if (!content) {
+      console.error('No content in response, full response:', response);
+      return 'Error: AI returned empty response';
+    }
+
+    return content;
   }
 
   private async sendResponseWithImages(roomId: string, response: string): Promise<void> {
