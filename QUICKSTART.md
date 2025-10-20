@@ -4,32 +4,72 @@ Get your Matrix ChatGPT bot running in 5 minutes!
 
 ## Prerequisites
 
-- Cloudflare account (free)
-- Matrix account
-- OpenAI API key
+- Cloudflare account (free tier works)
+- Matrix account (any homeserver)
+- OpenAI API key (or compatible API)
+- Git installed
 
-## 1. Install Wrangler
+## Method 1: Automated Setup (Easiest)
 
 ```bash
+# 1. Clone from GitHub
+git clone https://github.com/yourusername/matrix-chatgpt-bot.git
+cd matrix-chatgpt-bot
+
+# 2. Install dependencies
+npm install
+
+# 3. Install Wrangler globally
 npm install -g wrangler
+
+# 4. Login to Cloudflare
+wrangler login
+
+# 5. Run automated setup
+./setup.sh
+```
+
+The script will automatically:
+- Create KV namespaces
+- Create R2 buckets
+- Generate `wrangler.toml`
+- Set up all required secrets
+
+Skip to **Deploy** section below!
+
+## Method 2: Manual Setup
+
+### 1. Clone and Install
+
+```bash
+git clone https://github.com/yourusername/matrix-chatgpt-bot.git
+cd matrix-chatgpt-bot
+npm install
+npm install -g wrangler
+```
+
+### 2. Login to Cloudflare
+
+```bash
 wrangler login
 ```
 
-## 2. Setup Project
+### 3. Create Configuration
 
 ```bash
-npm install
+cp wrangler.toml.example wrangler.toml
 ```
 
-## 3. Create Cloudflare Resources
+### 4. Create Cloudflare Resources
 
 ```bash
 # Create KV namespace
 wrangler kv:namespace create "KV"
 wrangler kv:namespace create "KV" --preview
 
-# Create R2 bucket
+# Create R2 buckets
 wrangler r2 bucket create matrix-bot-storage
+wrangler r2 bucket create matrix-bot-storage-preview
 ```
 
 Copy the KV namespace IDs and update `wrangler.toml`:
@@ -41,7 +81,7 @@ id = "YOUR_KV_ID_HERE"
 preview_id = "YOUR_PREVIEW_KV_ID_HERE"
 ```
 
-## 4. Configure Secrets
+### 5. Configure Secrets
 
 ```bash
 # Matrix account
@@ -64,13 +104,13 @@ wrangler secret put BOT_ADMIN_USERS
 # Example: @admin:matrix.org
 ```
 
-## 5. Deploy
+## Deploy
 
 ```bash
 wrangler deploy
 ```
 
-## 6. Initialize Bot
+## Initialize Bot
 
 ```bash
 # Replace with your actual worker URL
@@ -86,7 +126,7 @@ curl $BOT_URL/start
 curl $BOT_URL/status
 ```
 
-## 7. Test in Matrix
+## Test in Matrix
 
 1. Create or join a Matrix room
 2. Invite your bot: `/invite @mybot:matrix.org`

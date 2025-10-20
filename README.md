@@ -29,13 +29,48 @@ A serverless Matrix bot powered by OpenAI ChatGPT, deployed on Cloudflare Worker
 
 ## Setup
 
-### 1. Clone and Install
+### Option 1: Automated Setup (Recommended)
 
 ```bash
+# Clone from GitHub
+git clone https://github.com/yourusername/matrix-chatgpt-bot.git
+cd matrix-chatgpt-bot
+
+# Install dependencies
+npm install
+
+# Run automated setup script
+./setup.sh
+```
+
+The setup script will:
+- Create KV namespaces
+- Create R2 buckets
+- Generate `wrangler.toml` from template
+- Guide you through setting secrets
+
+### Option 2: Manual Setup
+
+#### 1. Clone and Install
+
+```bash
+git clone https://github.com/yourusername/matrix-chatgpt-bot.git
+cd matrix-chatgpt-bot
 npm install
 ```
 
-### 2. Configure Cloudflare
+#### 2. Create wrangler.toml
+
+```bash
+cp wrangler.toml.example wrangler.toml
+```
+
+#### 3. Configure Cloudflare
+
+Login to Cloudflare:
+```bash
+wrangler login
+```
 
 Create KV namespace:
 ```bash
@@ -46,11 +81,12 @@ wrangler kv:namespace create "KV" --preview
 Create R2 bucket:
 ```bash
 wrangler r2 bucket create matrix-bot-storage
+wrangler r2 bucket create matrix-bot-storage-preview
 ```
 
 Update `wrangler.toml` with your namespace IDs.
 
-### 3. Set Environment Variables
+#### 4. Set Secrets
 
 ```bash
 wrangler secret put MATRIX_USER_ID
@@ -69,13 +105,13 @@ wrangler secret put BOT_ADMIN_USERS
 # Enter: @admin1:matrix.org,@admin2:matrix.org
 ```
 
-### 4. Deploy
+#### 5. Deploy
 
 ```bash
 wrangler deploy
 ```
 
-### 5. Initialize Bot
+#### 6. Initialize Bot
 
 ```bash
 # Login to Matrix
