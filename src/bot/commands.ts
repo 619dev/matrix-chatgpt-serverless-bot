@@ -185,6 +185,18 @@ export class CommandHandler {
         return stats;
       },
     });
+
+    this.commands.set('gpt', {
+      name: 'gpt',
+      description: 'Chat with GPT (anyone can use)',
+      adminOnly: false,
+      handler: async (args) => {
+        if (args.length === 0) {
+          return 'Usage: !gpt <your message>';
+        }
+        return '';
+      },
+    });
   }
 
   async handleCommand(message: string, context: CommandContext): Promise<string | null> {
@@ -198,6 +210,10 @@ export class CommandHandler {
 
     const command = this.commands.get(commandName);
     if (!command) {
+      return null;
+    }
+
+    if (commandName === 'gpt') {
       return null;
     }
 

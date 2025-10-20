@@ -44,8 +44,9 @@ export class MessageHandler {
 
     const botUserId = this.matrixClient.getUserId();
     const isMentioned = message.includes(botUserId || '');
+    const isGptCommand = message.startsWith('!gpt ');
 
-    if (!isMentioned && !message.startsWith('!')) {
+    if (!isMentioned && !message.startsWith('!') && !isGptCommand) {
       return;
     }
 
@@ -68,7 +69,9 @@ export class MessageHandler {
       }
 
       let cleanMessage = message;
-      if (botUserId && message.includes(botUserId)) {
+      if (isGptCommand) {
+        cleanMessage = message.replace(/^!gpt\s+/, '').trim();
+      } else if (botUserId && message.includes(botUserId)) {
         cleanMessage = message.replace(botUserId, '').trim();
       }
 
