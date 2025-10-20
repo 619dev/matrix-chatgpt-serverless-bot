@@ -154,8 +154,35 @@ export class MessageHandler {
   }
 
   private async sendResponseWithImages(roomId: string, response: string): Promise<void> {
-    const imageUrlRegex = /(https?:\/\/[^\s]+\.(?:png|jpg|jpeg|gif|webp|bmp)(?:\?[^\s]*)?)/gi;
-    const imageUrls = response.match(imageUrlRegex);
+    console.log('Response content:', response);
+
+    const imageUrlRegex = /(https?:\/\/[^\s<>"']+\.(?:png|jpg|jpeg|gif|webp|bmp|svg)(?:[^\s<>"']*))/gi;
+    const generalUrlRegex = /(https?:\/\/[^\s<>"']+)/gi;
+
+    let imageUrls: string[] | null = response.match(imageUrlRegex);
+
+    if (!imageUrls) {
+      const allUrls = response.match(generalUrlRegex);
+      console.log('All URLs found:', allUrls);
+
+      if (allUrls) {
+        const filtered = allUrls.filter(url => {
+          const lower = url.toLowerCase();
+          return lower.includes('image') ||
+                 lower.includes('img') ||
+                 lower.includes('.png') ||
+                 lower.includes('.jpg') ||
+                 lower.includes('.jpeg') ||
+                 lower.includes('.gif') ||
+                 lower.includes('.webp');
+        });
+        if (filtered.length > 0) {
+          imageUrls = filtered;
+        }
+      }
+    }
+
+    console.log('Image URLs detected:', imageUrls);
 
     if (imageUrls && imageUrls.length > 0) {
       let textContent = response;
@@ -170,10 +197,12 @@ export class MessageHandler {
 
       for (const imageUrl of imageUrls) {
         try {
+          console.log('Attempting to send image:', imageUrl);
           await this.matrixClient.sendImageMessage(roomId, imageUrl, 'Generated Image');
+          console.log('Image sent successfully');
         } catch (error) {
           console.error(`Failed to send image ${imageUrl}:`, error);
-          await this.matrixClient.sendMessage(roomId, `Image: ${imageUrl}`);
+          await this.matrixClient.sendMessage(roomId, `Image URL: ${imageUrl}`);
         }
       }
     } else {
