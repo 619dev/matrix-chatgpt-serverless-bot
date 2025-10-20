@@ -202,29 +202,26 @@ export class MessageHandler {
   private async sendResponseWithImages(roomId: string, response: string): Promise<void> {
     console.log('Response content:', response);
 
-    const imageUrlRegex = /(https?:\/\/[^\s<>"']+\.(?:png|jpg|jpeg|gif|webp|bmp|svg)(?:[^\s<>"']*))/gi;
-    const generalUrlRegex = /(https?:\/\/[^\s<>"']+)/gi;
+    const generalUrlRegex = /(https?:\/\/[^\s<>"'\u4e00-\u9fa5]+)/gi;
+    const allUrls = response.match(generalUrlRegex);
 
-    let imageUrls: string[] | null = response.match(imageUrlRegex);
+    console.log('All URLs found:', allUrls);
 
-    if (!imageUrls) {
-      const allUrls = response.match(generalUrlRegex);
-      console.log('All URLs found:', allUrls);
+    let imageUrls: string[] | null = null;
 
-      if (allUrls) {
-        const filtered = allUrls.filter(url => {
-          const lower = url.toLowerCase();
-          return lower.includes('image') ||
-                 lower.includes('img') ||
-                 lower.includes('.png') ||
-                 lower.includes('.jpg') ||
-                 lower.includes('.jpeg') ||
-                 lower.includes('.gif') ||
-                 lower.includes('.webp');
-        });
-        if (filtered.length > 0) {
-          imageUrls = filtered;
-        }
+    if (allUrls) {
+      const filtered = allUrls.filter(url => {
+        const lower = url.toLowerCase();
+        return lower.includes('image') ||
+               lower.includes('img') ||
+               lower.includes('photo') ||
+               lower.includes('pic') ||
+               lower.match(/\.(png|jpg|jpeg|gif|webp|bmp|svg)($|\?)/i) ||
+               lower.includes('doubaopic') ||
+               lower.includes('volccdn');
+      });
+      if (filtered.length > 0) {
+        imageUrls = filtered;
       }
     }
 
