@@ -245,30 +245,7 @@ export class MessageHandler {
 
     console.log('Image URLs detected:', imageUrls);
 
-    if (imageUrls && imageUrls.length > 0) {
-      let textContent = response;
-
-      for (const imageUrl of imageUrls) {
-        textContent = textContent.replace(imageUrl, '').trim();
-      }
-
-      if (textContent) {
-        await this.matrixClient.sendMessage(roomId, textContent);
-      }
-
-      for (const imageUrl of imageUrls) {
-        try {
-          console.log('Attempting to send image:', imageUrl);
-          await this.matrixClient.sendImageMessage(roomId, imageUrl, 'Generated Image');
-          console.log('Image sent successfully');
-        } catch (error) {
-          console.error(`Failed to send image ${imageUrl}:`, error);
-          await this.matrixClient.sendMessage(roomId, `Image URL: ${imageUrl}`);
-        }
-      }
-    } else {
-      await this.matrixClient.sendMessage(roomId, response);
-    }
+    await this.matrixClient.sendMessage(roomId, response);
   }
 
   private isImageGenerationRequest(message: string): boolean {
