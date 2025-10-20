@@ -84,7 +84,15 @@ export class MessageHandler {
       const isImageRequest = this.isImageGenerationRequest(cleanMessage);
 
       if (isImageRequest) {
-        await this.matrixClient.sendMessage(roomId, '🎨 Generating image, please wait...');
+        const roomConfig = await this.kvStorage.getRoomConfig(roomId);
+        const globalConfig = await this.kvStorage.getGlobalConfig();
+        const currentModel = roomConfig?.model || globalConfig.defaultModel || this.env.DEFAULT_MODEL || 'gpt-3.5-turbo';
+
+        console.log('Image generation detected');
+        console.log('Current model:', currentModel);
+        console.log('Base URL:', globalConfig.providers?.[globalConfig.defaultProvider || 'openai']?.baseURL);
+
+        await this.matrixClient.sendMessage(roomId, `🎨 Generating image with model: ${currentModel}\nThis may take up to 3 minutes...`);
         await this.matrixClient.sendTyping(roomId, false);
 
         this.generateResponseAsync(roomId, cleanMessage, event.event_id);
