@@ -224,6 +224,23 @@ The bot will continue running with the new code.
 
 ## Troubleshooting
 
+### Durable Objects Migration Error
+
+**Error**: `In order to use Durable Objects with a free plan, you must create a namespace using a new_sqlite_classes migration.`
+
+**Solution**: Ensure your `wrangler.toml` uses `new_sqlite_classes`:
+
+```toml
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["MatrixSync"]  # Required for Cloudflare free plan
+```
+
+If you already deployed with `new_classes`, you may need to:
+1. Delete the worker: `wrangler delete`
+2. Update `wrangler.toml` to use `new_sqlite_classes`
+3. Deploy again: `wrangler deploy`
+
 ### Bot doesn't login
 
 1. Check Matrix credentials:

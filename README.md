@@ -23,9 +23,11 @@ A serverless Matrix bot powered by OpenAI ChatGPT, deployed on Cloudflare Worker
 
 ## Prerequisites
 
-1. Cloudflare account with Workers enabled
+1. Cloudflare account with Workers enabled (free tier supported)
 2. Matrix account (any homeserver)
 3. OpenAI API key or compatible API endpoint
+
+**Note**: This bot works on Cloudflare's free tier! It uses `new_sqlite_classes` for Durable Objects, which is compatible with free plans.
 
 ## Setup
 
@@ -262,6 +264,34 @@ npm run build
 - `GET /status` - Get sync status
 
 ## Troubleshooting
+
+### Durable Objects Error (Free Plan)
+
+If you get an error about `new_classes` migration:
+
+```
+In order to use Durable Objects with a free plan, you must create a namespace using a `new_sqlite_classes` migration.
+```
+
+Make sure your `wrangler.toml` uses `new_sqlite_classes` instead of `new_classes`:
+
+```toml
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["MatrixSync"]  # Use this for free plan
+```
+
+### KV Binding Name Error
+
+The KV binding name in `wrangler.toml` **must** be `"KV"` (uppercase):
+
+```toml
+[[kv_namespaces]]
+binding = "KV"  # Must match the code
+id = "your_id_here"
+```
+
+The namespace title (shown in dashboard) can be anything, but the binding must be "KV".
 
 ### Bot doesn't respond
 

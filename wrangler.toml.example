@@ -7,6 +7,7 @@ compatibility_date = "2024-01-01"
 MATRIX_HOMESERVER = "https://matrix.org"
 
 # KV Namespace Configuration
+# IMPORTANT: The binding name must be "KV" (not your namespace name)
 # Run: wrangler kv:namespace create "KV" to get your production ID
 # Run: wrangler kv:namespace create "KV" --preview to get your preview ID
 [[kv_namespaces]]
@@ -30,7 +31,7 @@ script_name = "matrix-chatgpt-bot"
 
 [[migrations]]
 tag = "v1"
-new_classes = ["MatrixSync"]
+new_sqlite_classes = ["MatrixSync"]
 
 # Scheduled triggers (runs sync every 2 minutes)
 [triggers]
