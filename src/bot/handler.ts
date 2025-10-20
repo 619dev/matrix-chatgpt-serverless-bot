@@ -270,16 +270,22 @@ export class MessageHandler {
 
   private async generateResponseAsync(roomId: string, message: string, eventId: string): Promise<void> {
     try {
-      const response = await this.generateResponse(roomId, message);
+      const globalConfig = await this.kvStorage.getGlobalConfig();
+      const provider = globalConfig.providers?.[globalConfig.defaultProvider || 'openai'];
 
-      console.log('Generated response:', response);
-      console.log('Response type:', typeof response);
-      console.log('Response length:', response?.length);
-
-      if (!response || response.trim() === '') {
-        await this.matrixClient.sendMessage(roomId, '❌ Received empty response from AI');
-        return;
+      if (!provider) {
+        throw new Error('No AI provider configured');
       }
+
+      const aiClient = new AIClient(provider.baseURL, provider.apiKey);
+
+      console.log('Generating image with prompt:', message);
+
+      const imageUrl = await aiClient.generateImage(message, 'dall-e-3');
+
+      console.log('Generated image URL:', imageUrl);
+
+      const response = `Here is your image:\n${imageUrl}`;
 
       await this.r2Storage.appendConversationMessage(roomId, {
         role: 'assistant',
@@ -287,7 +293,8 @@ export class MessageHandler {
         timestamp: Date.now(),
       });
 
-      await this.sendResponseWithImages(roomId, response);
+      await this.matrixClient.sendMessage(roomId, `🎨 Image generated successfully!`);
+      await this.matrixClient.sendMessage(roomId, imageUrl);
 
       await this.matrixClient.sendReadReceipt(roomId, eventId);
     } catch (error) {

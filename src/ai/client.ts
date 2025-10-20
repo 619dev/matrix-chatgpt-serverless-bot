@@ -109,4 +109,47 @@ export class AIClient {
   getBaseURL(): string {
     return this.baseURL;
   }
+
+  async generateImage(prompt: string, model: string = 'dall-e-3', timeout: number = 180000): Promise<string> {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), timeout);
+
+    try {
+      const response = await fetch(`${this.baseURL}/images/generations`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${this.apiKey}`,
+        },
+        body: JSON.stringify({
+          model: model,
+          prompt: prompt,
+          n: 1,
+          size: '1024x1024',
+        }),
+        signal: controller.signal,
+      });
+
+      clearTimeout(timeoutId);
+
+      if (!response.ok) {
+        const error = await response.text();
+        throw new Error(`Image API request failed: ${response.status} ${error}`);
+      }
+
+      const result: any = await response.json();
+
+      if (result.data && result.data[0] && result.data[0].url) {
+        return result.data[0].url;
+      }
+
+      throw new Error('No image URL in response');
+    } catch (error) {
+      clearTimeout(timeoutId);
+      if (error instanceof Error && error.name === 'AbortError') {
+        throw new Error(`Image generation timeout after ${timeout}ms`);
+      }
+      throw error;
+    }
+  }
 }
