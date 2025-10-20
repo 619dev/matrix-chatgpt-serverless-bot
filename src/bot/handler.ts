@@ -227,11 +227,13 @@ export class MessageHandler {
                lower.match(/\.(png|jpg|jpeg|gif|webp|bmp|svg)($|\?)/i) ||
                lower.includes('doubaopic') ||
                lower.includes('volccdn') ||
-               lower.includes('bytedance');
+               lower.includes('bytedance') ||
+               lower.includes('link-ai.tech');
       });
       if (filtered.length > 0) {
         imageUrls = filtered;
       }
+      console.log('Filtered URLs:', filtered);
     }
 
     console.log('Image URLs detected:', imageUrls);
