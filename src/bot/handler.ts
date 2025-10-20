@@ -81,6 +81,16 @@ export class MessageHandler {
         timestamp: Date.now(),
       });
 
+      const isImageRequest = this.isImageGenerationRequest(cleanMessage);
+
+      if (isImageRequest) {
+        await this.matrixClient.sendMessage(roomId, '🎨 Generating image, please wait...');
+        await this.matrixClient.sendTyping(roomId, false);
+
+        this.generateResponseAsync(roomId, cleanMessage, event.event_id);
+        return;
+      }
+
       const response = await this.generateResponse(roomId, cleanMessage);
 
       console.log('Generated response:', response);
@@ -235,6 +245,54 @@ export class MessageHandler {
       }
     } else {
       await this.matrixClient.sendMessage(roomId, response);
+    }
+  }
+
+  private isImageGenerationRequest(message: string): boolean {
+    const imageKeywords = [
+      'draw', 'generate', 'create', 'make', 'show',
+      'image', 'picture', 'photo', 'illustration',
+      '画', '生成', '创建', '制作', '绘制'
+    ];
+
+    const lowerMessage = message.toLowerCase();
+
+    return imageKeywords.some(keyword => lowerMessage.includes(keyword));
+  }
+
+  private async generateResponseAsync(roomId: string, message: string, eventId: string): Promise<void> {
+    try {
+      const response = await this.generateResponse(roomId, message);
+
+      console.log('Generated response:', response);
+      console.log('Response type:', typeof response);
+      console.log('Response length:', response?.length);
+
+      if (!response || response.trim() === '') {
+        await this.matrixClient.sendMessage(roomId, '❌ Received empty response from AI');
+        return;
+      }
+
+      await this.r2Storage.appendConversationMessage(roomId, {
+        role: 'assistant',
+        content: response,
+        timestamp: Date.now(),
+      });
+
+      await this.sendResponseWithImages(roomId, response);
+
+      await this.matrixClient.sendReadReceipt(roomId, eventId);
+    } catch (error) {
+      console.error('Error in async generation:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+
+      let userMessage = `❌ Error: ${errorMessage}`;
+
+      if (errorMessage.includes('timeout') || errorMessage.includes('524')) {
+        userMessage = '⏱️ Request timeout. The API took too long to respond. Please try again.';
+      }
+
+      await this.matrixClient.sendMessage(roomId, userMessage);
     }
   }
 }
