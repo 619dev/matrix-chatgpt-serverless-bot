@@ -254,6 +254,19 @@ npm run dev
 npm run build
 ```
 
+## Testing the Bot
+
+See [TEST_CHECKLIST.md](./TEST_CHECKLIST.md) for a complete step-by-step guide.
+
+**Quick test:**
+
+1. Invite bot in Matrix: `/invite @your-bot-user-id:oi6.uk`
+2. Wait 2-3 minutes for bot to accept
+3. Send message with bot mention: `@your-bot-user-id:oi6.uk hello!`
+4. Or use command: `!help`
+
+**Important**: Bot only responds to messages that mention its full user ID or start with `!`.
+
 ## API Endpoints
 
 - `GET /` - Health check
