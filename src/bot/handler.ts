@@ -203,13 +203,13 @@ export class MessageHandler {
     console.log('Response content:', response);
     console.log('Response length:', response.length);
 
-    const generalUrlRegex = /(https?:\/\/[^\s<>"'\u4e00-\u9fa5，。、；：！？]+)/gi;
+    const generalUrlRegex = /(https?:\/\/[^\s\u4e00-\u9fa5]+)/gi;
     const urlMatches = response.match(generalUrlRegex);
 
     let allUrls: string[] | null = null;
     if (urlMatches) {
       allUrls = urlMatches.map(url => {
-        return url.replace(/[,\.;:!?]+$/, '');
+        return url.replace(/[,\.;:!?，。、；：！？]+$/, '');
       });
     }
 
