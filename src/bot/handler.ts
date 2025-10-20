@@ -270,14 +270,10 @@ export class MessageHandler {
 
   private async generateResponseAsync(roomId: string, message: string, eventId: string): Promise<void> {
     try {
-      const globalConfig = await this.kvStorage.getGlobalConfig();
-      const provider = globalConfig.providers?.[globalConfig.defaultProvider || 'openai'];
+      const baseURL = this.env.OPENAI_BASE_URL || 'https://api.openai.com/v1';
+      const apiKey = this.env.OPENAI_API_KEY;
 
-      if (!provider) {
-        throw new Error('No AI provider configured');
-      }
-
-      const aiClient = new AIClient(provider.baseURL, provider.apiKey);
+      const aiClient = new AIClient(baseURL, apiKey);
 
       console.log('Generating image with prompt:', message);
 
