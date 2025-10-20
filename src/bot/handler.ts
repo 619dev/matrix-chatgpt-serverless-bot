@@ -92,7 +92,7 @@ export class MessageHandler {
         console.log('Current model:', currentModel);
         console.log('Base URL:', globalConfig.providers?.[globalConfig.defaultProvider || 'openai']?.baseURL);
 
-        await this.matrixClient.sendMessage(roomId, `🎨 Generating image with model: ${currentModel}\nThis may take up to 3 minutes...`);
+        await this.matrixClient.sendMessage(roomId, `🎨 Generating image with gpt-image-1...\nThis may take up to 3 minutes...`);
         await this.matrixClient.sendTyping(roomId, false);
 
         this.generateResponseAsync(roomId, cleanMessage, event.event_id);
@@ -281,7 +281,7 @@ export class MessageHandler {
 
       console.log('Generating image with prompt:', message);
 
-      const imageUrl = await aiClient.generateImage(message, 'dall-e-3');
+      const imageUrl = await aiClient.generateImage(message, 'gpt-image-1');
 
       console.log('Generated image URL:', imageUrl);
 
