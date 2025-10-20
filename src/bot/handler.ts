@@ -103,10 +103,15 @@ export class MessageHandler {
       await this.matrixClient.sendReadReceipt(roomId, event.event_id);
     } catch (error) {
       console.error('Error handling message:', error);
-      await this.matrixClient.sendMessage(
-        roomId,
-        `❌ Error: ${error instanceof Error ? error.message : 'Unknown error'}`
-      );
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+
+      let userMessage = `❌ Error: ${errorMessage}`;
+
+      if (errorMessage.includes('timeout') || errorMessage.includes('524')) {
+        userMessage = '⏱️ Request timeout. Image generation takes longer - please try again or use a faster model.';
+      }
+
+      await this.matrixClient.sendMessage(roomId, userMessage);
     } finally {
       await this.matrixClient.sendTyping(roomId, false);
     }
@@ -152,12 +157,17 @@ export class MessageHandler {
       },
     ];
 
+    const isImageModel = model.toLowerCase().includes('image') || model.toLowerCase().includes('dalle');
+    const timeout = isImageModel ? 180000 : 120000;
+
+    console.log(`Using model: ${model}, timeout: ${timeout}ms`);
+
     const response = await aiClient.chatCompletion({
       model: model,
       messages: messages,
       temperature: roomConfig?.temperature || 0.7,
       max_tokens: roomConfig?.maxTokens || 2000,
-    });
+    }, timeout);
 
     console.log('Full API response:', JSON.stringify(response, null, 2));
 
