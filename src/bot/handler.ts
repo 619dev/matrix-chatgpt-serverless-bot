@@ -189,11 +189,18 @@ export class MessageHandler {
 
     console.log('Full API response:', JSON.stringify(response, null, 2));
 
-    const content = response.choices[0]?.message?.content;
+    const choice = response.choices[0];
+    const content = choice?.message?.content;
 
     if (!content) {
       console.error('No content in response, full response:', response);
       return 'Error: AI returned empty response';
+    }
+
+    const imgUrls = (choice as any).img_urls;
+    if (imgUrls && Array.isArray(imgUrls) && imgUrls.length > 0) {
+      console.log('Found img_urls in response:', imgUrls);
+      return content + '\n' + imgUrls.join('\n');
     }
 
     return content;
