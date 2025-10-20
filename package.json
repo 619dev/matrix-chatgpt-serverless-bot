@@ -1,0 +1,17 @@
+{
+  "name": "matrix-chatgpt-bot",
+  "version": "1.0.0",
+  "description": "Matrix ChatGPT bot deployed on Cloudflare Workers",
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "build": "tsc"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20241127.0",
+    "typescript": "^5.7.2",
+    "wrangler": "^3.90.0"
+  }
+}
