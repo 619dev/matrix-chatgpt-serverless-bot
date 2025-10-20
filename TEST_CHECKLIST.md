@@ -1,5 +1,7 @@
 # Matrix Bot Testing Checklist
 
+English | [简体中文](TEST_CHECKLIST.zh-CN.md)
+
 ## Pre-flight Checks
 
 1. **Verify Bot is Running**

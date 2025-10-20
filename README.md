@@ -2,6 +2,8 @@
 
 A serverless Matrix bot powered by OpenAI ChatGPT, deployed on Cloudflare Workers with KV and R2 storage.
 
+English | [简体中文](README.zh-CN.md)
+
 ## Features
 
 - 🤖 **AI-Powered Conversations**: Chat with OpenAI models in Matrix rooms

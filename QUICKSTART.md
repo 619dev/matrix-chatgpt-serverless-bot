@@ -2,6 +2,8 @@
 
 Get your Matrix ChatGPT bot running in 5 minutes!
 
+English | [简体中文](QUICKSTART.zh-CN.md)
+
 ## Prerequisites
 
 - Cloudflare account (free tier works)

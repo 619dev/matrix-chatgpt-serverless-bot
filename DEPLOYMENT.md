@@ -1,5 +1,7 @@
 # Deployment Guide
 
+English | [简体中文](DEPLOYMENT.zh-CN.md)
+
 ## Step-by-Step Deployment
 
 ### Prerequisites

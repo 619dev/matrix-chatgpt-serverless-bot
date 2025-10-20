@@ -1,5 +1,7 @@
 # Contributing Guide
 
+English | [简体中文](CONTRIBUTING.zh-CN.md)
+
 ## For Public GitHub Repository
 
 This project is designed to be safely shared on GitHub without exposing sensitive credentials.
