@@ -89,7 +89,7 @@ export class MessageHandler {
         timestamp: Date.now(),
       });
 
-      await this.matrixClient.sendMessage(roomId, response);
+      await this.sendResponseWithImages(roomId, response);
 
       await this.matrixClient.sendReadReceipt(roomId, event.event_id);
     } catch (error) {
@@ -151,5 +151,33 @@ export class MessageHandler {
     });
 
     return response.choices[0].message.content;
+  }
+
+  private async sendResponseWithImages(roomId: string, response: string): Promise<void> {
+    const imageUrlRegex = /(https?:\/\/[^\s]+\.(?:png|jpg|jpeg|gif|webp|bmp)(?:\?[^\s]*)?)/gi;
+    const imageUrls = response.match(imageUrlRegex);
+
+    if (imageUrls && imageUrls.length > 0) {
+      let textContent = response;
+
+      for (const imageUrl of imageUrls) {
+        textContent = textContent.replace(imageUrl, '').trim();
+      }
+
+      if (textContent) {
+        await this.matrixClient.sendMessage(roomId, textContent);
+      }
+
+      for (const imageUrl of imageUrls) {
+        try {
+          await this.matrixClient.sendImageMessage(roomId, imageUrl, 'Generated Image');
+        } catch (error) {
+          console.error(`Failed to send image ${imageUrl}:`, error);
+          await this.matrixClient.sendMessage(roomId, `Image: ${imageUrl}`);
+        }
+      }
+    } else {
+      await this.matrixClient.sendMessage(roomId, response);
+    }
   }
 }

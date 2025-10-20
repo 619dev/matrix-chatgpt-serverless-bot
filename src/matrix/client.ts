@@ -173,6 +173,78 @@ export class MatrixClient {
     }
   }
 
+  async uploadMedia(data: ArrayBuffer, contentType: string): Promise<string> {
+    if (!this.accessToken) {
+      throw new Error('Not authenticated');
+    }
+
+    const response = await fetch(
+      `${this.homeserver}/_matrix/media/v3/upload`,
+      {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${this.accessToken}`,
+          'Content-Type': contentType,
+        },
+        body: data,
+      }
+    );
+
+    if (!response.ok) {
+      const error = await response.text();
+      throw new Error(`Failed to upload media: ${response.status} ${error}`);
+    }
+
+    const result = await response.json() as { content_uri: string };
+    return result.content_uri;
+  }
+
+  async sendImageMessage(roomId: string, imageUrl: string, body: string = 'Image'): Promise<string> {
+    if (!this.accessToken) {
+      throw new Error('Not authenticated');
+    }
+
+    const imageResponse = await fetch(imageUrl);
+    if (!imageResponse.ok) {
+      throw new Error(`Failed to download image: ${imageResponse.status}`);
+    }
+
+    const imageData = await imageResponse.arrayBuffer();
+    const contentType = imageResponse.headers.get('Content-Type') || 'image/png';
+
+    const mxcUri = await this.uploadMedia(imageData, contentType);
+
+    const txnId = `m${Date.now()}${Math.random().toString(36).substring(2, 9)}`;
+
+    const response = await fetch(
+      `${this.homeserver}/_matrix/client/v3/rooms/${encodeURIComponent(roomId)}/send/m.room.message/${txnId}`,
+      {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${this.accessToken}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          msgtype: 'm.image',
+          body: body,
+          url: mxcUri,
+          info: {
+            mimetype: contentType,
+            size: imageData.byteLength,
+          },
+        }),
+      }
+    );
+
+    if (!response.ok) {
+      const error = await response.text();
+      throw new Error(`Failed to send image message: ${response.status} ${error}`);
+    }
+
+    const data = await response.json() as { event_id: string };
+    return data.event_id;
+  }
+
   async sendReadReceipt(roomId: string, eventId: string): Promise<void> {
     if (!this.accessToken) {
       throw new Error('Not authenticated');
