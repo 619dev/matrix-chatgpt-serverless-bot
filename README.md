@@ -130,6 +130,7 @@ curl https://your-worker.workers.dev/start
 Mention the bot or use commands starting with `!`:
 
 - `!help` - Show available commands
+- `!gpt <message>` - Chat with GPT (anyone can use, no mention needed)
 - `!reset` - Clear conversation history
 - `!provider` - Show current AI provider
 - `!provider list` - List all available providers
@@ -145,16 +146,30 @@ Mention the bot or use commands starting with `!`:
 
 ### Chatting with the Bot
 
-Simply mention the bot in your message:
+There are three ways to interact with the bot:
+
+#### 1. Using !gpt command (Easiest, no mention needed)
+
+```
+!gpt what is the capital of France?
+```
+
+```
+!gpt tell me a joke
+```
+
+#### 2. Mentioning the bot
 
 ```
 @botuser:matrix.org what is the capital of France?
 ```
 
-Or in rooms where the bot is configured:
+#### 3. Using other commands
 
 ```
 !help
+!reset
+!provider list
 ```
 
 ## Custom API Providers
@@ -262,10 +277,14 @@ See [TEST_CHECKLIST.md](./TEST_CHECKLIST.md) for a complete step-by-step guide.
 
 1. Invite bot in Matrix: `/invite @your-bot-user-id:oi6.uk`
 2. Wait 2-3 minutes for bot to accept
-3. Send message with bot mention: `@your-bot-user-id:oi6.uk hello!`
-4. Or use command: `!help`
+3. Try the `!gpt` command: `!gpt hello!`
+4. Or mention the bot: `@your-bot-user-id:oi6.uk hello!`
+5. Or use help: `!help`
 
-**Important**: Bot only responds to messages that mention its full user ID or start with `!`.
+**Important**: Bot responds to:
+- `!gpt <message>` - Easiest way, no mention needed
+- `@bot-user-id message` - Traditional mention
+- `!command` - Other bot commands
 
 ## API Endpoints
 

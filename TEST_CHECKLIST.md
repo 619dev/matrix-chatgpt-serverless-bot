@@ -42,6 +42,16 @@ Check if the bot appears in the room member list.
 
 **✅ Correct message formats:**
 
+**Option 1: Use !gpt command (Easiest, recommended)**
+```
+!gpt hello
+```
+
+```
+!gpt what is the weather like?
+```
+
+**Option 2: Mention the bot**
 ```
 @your-bot-user-id:oi6.uk hello
 ```
@@ -50,8 +60,13 @@ Check if the bot appears in the room member list.
 @your-bot-user-id:oi6.uk what is the weather like?
 ```
 
+**Option 3: Use other commands**
 ```
 !help
+```
+
+```
+!reset
 ```
 
 **❌ Incorrect formats (bot will NOT respond):**
@@ -64,7 +79,10 @@ hello
 hey bot, how are you?
 ```
 
-The bot MUST be mentioned with its full user ID, or the message must start with `!`.
+The bot responds to:
+- `!gpt <message>` - Chat with GPT (no mention needed)
+- `@bot-user-id message` - Traditional mention
+- `!command` - Other bot commands
 
 ### Step 4: Check Response Time
 
@@ -91,7 +109,7 @@ The bot MUST be mentioned with its full user ID, or the message must start with 
 **Possible causes:**
 
 1. **Message format incorrect**
-   - Solution: Include full bot user ID: `@botname:oi6.uk hello`
+   - Solution: Use `!gpt hello` or include full bot user ID: `@botname:oi6.uk hello`
 
 2. **User not in allowed list**
    - Check if `BOT_ADMIN_USERS` secret is set
@@ -159,7 +177,7 @@ curl https://matrix-chatgpt-bot.facilis-velox.workers.dev/stop
 3. Start: `curl https://your-worker.workers.dev/start`
 4. In Matrix: `/invite @botuser:oi6.uk`
 5. Wait 2-3 minutes
-6. Send: `@botuser:oi6.uk hello!`
+6. Send: `!gpt hello!` or `@botuser:oi6.uk hello!`
 7. Wait up to 2 minutes for response
 
 ## Monitoring
@@ -176,12 +194,13 @@ Or use Cloudflare dashboard for historical logs.
 Try these commands once the bot is working:
 
 ```
+!gpt tell me a joke
+!gpt explain quantum computing
 !help
-!providers
-!models
-!status
-@botuser:oi6.uk tell me a joke
-@botuser:oi6.uk explain quantum computing
+!reset
+!provider list
+!model
+@botuser:oi6.uk what is AI?
 ```
 
 ## Need Help?

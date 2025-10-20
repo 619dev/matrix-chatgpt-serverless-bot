@@ -130,18 +130,27 @@ curl $BOT_URL/status
 
 1. Create or join a Matrix room
 2. Invite your bot: `/invite @mybot:matrix.org`
-3. Send a message: `@mybot:matrix.org hello!`
-4. The bot should respond!
+3. Wait 2-3 minutes for bot to accept invite
+4. Send a message:
+   - **Easy way**: `!gpt hello!`
+   - **Traditional way**: `@mybot:matrix.org hello!`
+5. The bot should respond!
 
 ## Using Commands
 
 Try these commands:
 
 ```
-!help                    # Show all commands
+!gpt tell me a joke     # Chat with GPT (easiest way)
+!help                   # Show all commands
 !provider list          # List AI providers
 !reset                  # Clear conversation history
 ```
+
+The bot responds to three types of messages:
+1. **`!gpt <message>`** - Easiest way, no mention needed
+2. **`@bot-user-id message`** - Traditional mention
+3. **`!command`** - Other bot commands
 
 ## Adding Custom API Providers
 
